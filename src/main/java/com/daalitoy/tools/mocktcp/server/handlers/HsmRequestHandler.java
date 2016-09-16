@@ -3,6 +3,7 @@ package com.daalitoy.tools.mocktcp.server.handlers;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.ChannelHandlerContext;
+import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelHandler;
 import org.jboss.netty.logging.InternalLogger;
@@ -24,10 +25,16 @@ public class HsmRequestHandler extends SimpleChannelHandler {
     }
 
     @Override
+    public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
+        super.channelConnected(ctx, e);
+        logger.info(Thread.currentThread().getName()+" channel opened - " + ctx.getChannel().getRemoteAddress());
+    }
+
+    @Override
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
         super.messageReceived(ctx, e);
         ChannelBuffer buf = (ChannelBuffer) e.getMessage();
-        logger.info("Received Buf = " + ChannelBuffers.hexDump(buf));
+        logger.info(Thread.currentThread().getName()+" Received Buf = " + ChannelBuffers.hexDump(buf));
 
         boolean shouldDelay = false;
         counter.compareAndSet(Long.MAX_VALUE, 0);
